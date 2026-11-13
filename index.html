@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BookNest | Library Management System</title>
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app">
+
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <span class="brand-icon">📚</span>
+    BookNest
+  </div>
+
+  <div class="nav-label">MAIN MENU</div>
+
+  <button class="nav-link active" data-page="home"><span class="nav-icon">⌂</span> Dashboard</button>
+  <button class="nav-link" data-page="books"><span class="nav-icon">▤</span> Books Catalogue</button>
+  <button class="nav-link" data-page="add"><span class="nav-icon">＋</span> Add Book</button>
+  <button class="nav-link" data-page="issue"><span class="nav-icon">↗</span> Issue Book</button>
+  <button class="nav-link" data-page="return"><span class="nav-icon">↙</span> Return Book</button>
+  <button class="nav-link" data-page="members"><span class="nav-icon">♙</span> Members</button>
+
+  <div class="nav-label">INFORMATION</div>
+  <button class="nav-link" data-page="about"><span class="nav-icon">ⓘ</span> About Us</button>
+
+  <div class="sidebar-bottom">
+    <strong>BookNest Library</strong><br>
+    Your knowledge, our priority.<br>
+    <span>Library Management System</span>
+  </div>
+</aside>
+
+<main class="main">
+
+<header class="topbar">
+  <div style="display:flex;align-items:center;gap:12px">
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+    <div>
+      <h2>BookNest Library Portal</h2>
+      <p id="today"></p>
+    </div>
+  </div>
+  <div class="user">👤 Library Administrator</div>
+</header>
+
+<!-- 1. DASHBOARD -->
+<section class="page active" id="home">
+  <div class="heading">
+    <h1>Welcome to BookNest 👋</h1>
+    <p>Manage your library activities from one place.</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-icon">📚</div>
+      <small>Total Books</small>
+      <h2 id="totalBooks">0</h2>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <small>Available Copies</small>
+      <h2 id="availableBooks">0</h2>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📖</div>
+      <small>Issued Copies</small>
+      <h2 id="issuedBooks">0</h2>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <small>Total Members</small>
+      <h2 id="totalMembers">0</h2>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">
+      <h3>Library Availability</h3>
+      <span style="font-size:12px;color:var(--muted)" id="availabilityText"></span>
+    </div>
+    <div class="progress"><div id="availabilityBar"></div></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">
+      <h3>Recently Issued Books</h3>
+      <button class="btn btn-secondary" onclick="navigate('issue')">Issue a Book</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>BOOK</th><th>STUDENT</th><th>ISSUE DATE</th><th>STATUS</th></tr>
+        </thead>
+        <tbody id="recentIssues"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- 2. BOOK CATALOGUE -->
+<section class="page" id="books">
+  <div class="heading">
+    <h1>Books Catalogue</h1>
+    <p>Explore and manage all books available in the library.</p>
+  </div>
+  <div class="panel">
+    <div class="toolbar">
+      <input id="bookSearch" placeholder="Search by title, author or ID..." oninput="renderBooks()">
+      <select id="categoryFilter" onchange="renderBooks()">
+        <option value="">All Categories</option>
+        <option>Programming</option>
+        <option>Mathematics</option>
+        <option>Physics</option>
+        <option>Literature</option>
+        <option>Science</option>
+      </select>
+    </div>
+    <div class="book-grid" id="bookGrid"></div>
+  </div>
+</section>
+
+<!-- 3. ADD BOOK -->
+<section class="page" id="add">
+  <div class="heading">
+    <h1>Add New Book</h1>
+    <p>Add new books to the library collection.</p>
+  </div>
+  <div class="form-card">
+    <form id="addForm">
+      <div class="form-grid">
+        <div class="field">
+          <label>Book ID</label>
+          <input id="bookId" placeholder="Example: BK106" required>
+        </div>
+        <div class="field">
+          <label>Book Title</label>
+          <input id="bookTitle" placeholder="Enter book title" required>
+        </div>
+        <div class="field">
+          <label>Author Name</label>
+          <input id="bookAuthor" placeholder="Enter author name" required>
+        </div>
+        <div class="field">
+          <label>Category</label>
+          <select id="bookCategory" required>
+            <option value="">Select category</option>
+            <option>Programming</option>
+            <option>Mathematics</option>
+            <option>Physics</option>
+            <option>Literature</option>
+            <option>Science</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Total Copies</label>
+          <input id="bookQuantity" type="number" min="1" value="1" required>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn" type="submit">＋ Add Book</button>
+        <button class="btn btn-secondary" type="reset">Clear Form</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- 4. ISSUE BOOK -->
+<section class="page" id="issue">
+  <div class="heading">
+    <h1>Issue a Book</h1>
+    <p>Assign an available book to a registered student.</p>
+  </div>
+  <div class="form-card">
+    <div class="notice">Please ensure that the student is registered and the book has an available copy.</div>
+    <form id="issueForm">
+      <div class="form-grid">
+        <div class="field">
+          <label>Student ID</label>
+          <select id="issueStudent" required></select>
+        </div>
+        <div class="field">
+          <label>Book</label>
+          <select id="issueBook" required></select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Issue Date</label>
+        <input type="date" id="issueDate" required>
+      </div>
+      <button class="btn" type="submit">Issue Book</button>
+    </form>
+  </div>
+  <div class="panel" style="margin-top:20px">
+    <div class="panel-title"><h3>Active Issues</h3></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>BOOK</th><th>STUDENT</th><th>ISSUE DATE</th><th>STATUS</th></tr></thead>
+        <tbody id="activeIssues"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- 5. RETURN BOOK -->
+<section class="page" id="return">
+  <div class="heading">
+    <h1>Return a Book</h1>
+    <p>Record books returned by students.</p>
+  </div>
+  <div class="form-card">
+    <form id="returnForm">
+      <div class="field">
+        <label>Select Issued Book</label>
+        <select id="returnIssue" required></select>
+      </div>
+      <div class="field">
+        <label>Return Date</label>
+        <input type="date" id="returnDate" required>
+      </div>
+      <button class="btn btn-green" type="submit">Confirm Return</button>
+    </form>
+  </div>
+  <div class="panel" style="margin-top:20px">
+    <div class="panel-title"><h3>Return Information</h3></div>
+    <p style="font-size:12px;color:var(--muted)">Returning a book automatically increases the available copy count and updates the dashboard.</p>
+  </div>
+</section>
+
+<!-- 6. MEMBERS -->
+<section class="page" id="members">
+  <div class="heading">
+    <h1>Library Members</h1>
+    <p>View registered students and their library information.</p>
+  </div>
+  <div class="panel">
+    <div class="panel-title"><h3>Registered Members</h3></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>STUDENT ID</th><th>STUDENT NAME</th><th>COURSE</th><th>BOOKS ISSUED</th></tr></thead>
+        <tbody id="memberTable"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- 7. ABOUT -->
+<section class="page" id="about">
+  <div class="heading">
+    <h1>About BookNest</h1>
+    <p>Learn more about our library management system.</p>
+  </div>
+  <div class="about-box">
+    <h2>📚 BookNest Library Management System</h2>
+    <p>BookNest is a simple digital library management system designed to make everyday library operations easier and more organised.</p>
+
+    <h3>Our Purpose</h3>
+    <p>The main purpose of BookNest is to maintain book records, manage student memberships, issue books and record book returns efficiently.</p>
+
+    <h3>Our Main Features</h3>
+    <p>• Book catalogue and search<br>
+    • Adding new books<br>
+    • Book issue and return management<br>
+    • Student member records<br>
+    • Automatic availability updates</p>
+
+    <h3>Technologies Used</h3>
+    <p>HTML5, CSS3, JavaScript and Browser LocalStorage.</p>
+
+    <h3>Project Information</h3>
+    <p>Project Name: BookNest<br>
+    Project Type: Library Management System<br>
+    Project Level: Beginner / First Semester<br>
+    Version: 1.0</p>
+
+    <h3>Contact Information</h3>
+    <p>Email: library@booknest.example<br>
+    Working Hours: Monday to Saturday, 9:00 AM – 5:00 PM</p>
+  </div>
+</section>
+
+</main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="script.js" defer></script>
+</body>
+</html>
